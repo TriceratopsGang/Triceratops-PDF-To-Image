@@ -122,7 +122,7 @@ class PDFConverter:
         quality_info.pack(anchor="w")
 
         # Convert Button
-        self.convert_btn = Button(content, text="Convert to Images", 
+        self.convert_btn = Button(content, text="Convert to Image/s", 
                                  command=self.start_conversion,
                                  font=("Segoe UI", 12, "bold"),
                                  bg=button_color, fg=text_color,
@@ -172,7 +172,7 @@ class PDFConverter:
 
         self.progress_win.geometry(f"450x180+{x}+{y}")
 
-        Label(self.progress_win, text="Converting PDF to Images", font=("Segoe UI", 14, "bold"), bg=progress_bg_color, fg=progress_text_color).pack(pady=(25, 5))
+        Label(self.progress_win, text="Converting PDF to Image/s", font=("Segoe UI", 14, "bold"), bg=progress_bg_color, fg=progress_text_color).pack(pady=(25, 5))
 
         self.progress_label = Label(self.progress_win, text="Initializing...", font=("Segoe UI", 10), bg=progress_bg_color, fg="#64748B")
         self.progress_label.pack(pady=(0, 15))
