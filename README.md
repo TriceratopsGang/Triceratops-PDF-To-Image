@@ -1,4 +1,4 @@
 # Triceratops-PDF-To-Image
-**A simple Python GUI to convert PDF pages to individual images**
-## TODO:
+**A simple Python GUI to convert PDF pages into individual images**
+## Todo:
 - Everything
