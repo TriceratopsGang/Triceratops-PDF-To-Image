@@ -1,5 +1,6 @@
 import fitz
 import os
+import sys
 import threading
 from tkinter import Tk, filedialog, messagebox, Label, Button, Frame, StringVar, Toplevel
 from tkinter.ttk import Progressbar, Style, Combobox
@@ -36,16 +37,45 @@ class PDFConverter:
 
         self.root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
         self.root.resizable(False, False)
-        self.root.iconbitmap('./assets/app.ico')
+        
+        # Set icon
+        try:
+            if hasattr(sys, '_MEIPASS'):
+                icon_path = os.path.join(sys._MEIPASS, 'assets', 'app.ico')
+            else:
+                icon_path = './assets/app.ico'
+
+            self.root.iconbitmap(icon_path)
+    
+        except:
+            pass
+        
         self.root.configure(bg=background_color)
 
-        # Variables
+        # Vars
         self.pdf_path = StringVar(value="No input selected")
         self.output_dir = StringVar(value="No output selected")
         self.quality_var = StringVar(value="High (300 DPI)")
         
         style = Style()
         style.theme_use(selected_theme)
+        
+        # Configure Combobox style to match theme
+        style.configure("Custom.TCombobox",
+                       fieldbackground=empty_color,
+                       background=button_color,
+                       foreground=text_color,
+                       arrowcolor=text_color,
+                       bordercolor=empty_color,
+                       lightcolor=empty_color,
+                       darkcolor=empty_color,
+                       selectbackground=button_color,
+                       selectforeground=text_color)
+        style.map("Custom.TCombobox",
+                 fieldbackground=[("readonly", empty_color)],
+                 selectbackground=[("readonly", empty_color)],
+                 selectforeground=[("readonly", text_color)],
+                 foreground=[("readonly", text_color)])
         
         header = Frame(self.root, bg=frame_color, height=120)
         header.pack(fill="x")
@@ -113,8 +143,8 @@ class PDFConverter:
         Label(quality_frame, text="Image Quality:", font=("Segoe UI", 12, "bold"), bg=frame_color, fg=text_color).pack(anchor="w", pady=(0, 8))
         
         quality_combo = Combobox(quality_frame, textvariable=self.quality_var, 
-                                values=["Low (72 DPI)", "Medium (150 DPI)", "High (300 DPI)", "Ultra (600 DPI)", "Overkill (1200 DPI)"],
-                                state="readonly", font=("Segoe UI", 11), height=10)
+                                values=["Screen (72 DPI)", "Standard (150 DPI)", "High (300 DPI)", "Print Quality (600 DPI)", "Maximum (1200 DPI)"],
+                                state="readonly", font=("Segoe UI", 11), height=10, style="Custom.TCombobox")
         quality_combo.pack(fill="x", pady=(0, 12))
         
         quality_info = Label(quality_frame, text="Higher quality = larger files & slower conversion", 
@@ -153,7 +183,9 @@ class PDFConverter:
             self.convert_btn.config(state="normal", bg=button_color, fg=text_color)
         else:
             self.convert_btn.config(state="disabled", bg=empty_color, fg=text_color)
+
     def start_conversion(self):
+
         # Disable button during conversion
         self.convert_btn.config(state="disabled", bg=empty_color, fg="#94A3B8")
 
@@ -193,17 +225,17 @@ class PDFConverter:
                                        style="Custom.Horizontal.TProgressbar")
         self.progress_bar.pack(pady=(0, 25))
 
-        # Start conversion thread
+        # Start thread
         threading.Thread(target=self.convert_pdf, daemon=True).start()
 
     def convert_pdf(self):
         try:
             quality_map = {
-                "Low (72 DPI)": 72,
-                "Medium (150 DPI)": 150,
+                "Screen (72 DPI)": 72,
+                "Standard (150 DPI)": 150,
                 "High (300 DPI)": 300,
-                "Ultra (600 DPI)": 600,
-                "Overkill (1200 DPI)": 1200
+                "Print Quality (600 DPI)": 600,
+                "Maximum (1200 DPI)": 1200
             }
             dpi = quality_map[self.quality_var.get()]
             
@@ -211,7 +243,7 @@ class PDFConverter:
             total_pages = len(doc)
 
             self.progress_bar["maximum"] = total_pages
-
+    
             for page_num in range(total_pages):
                 page = doc.load_page(page_num)
                 pix = page.get_pixmap(dpi=dpi)
@@ -241,6 +273,8 @@ class PDFConverter:
 # Run
 if __name__ == "__main__":
     root = Tk()
+
     app = PDFConverter(root)
     app.check_ready()
+
     root.mainloop()
