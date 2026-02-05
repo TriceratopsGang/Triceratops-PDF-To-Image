@@ -1,4 +1,4 @@
-import fitz
+import fitz # From PyMuPDF (https://github.com/pymupdf/PyMuPDF)
 import os
 import sys
 import threading
